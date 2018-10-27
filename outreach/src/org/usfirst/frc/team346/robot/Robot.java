@@ -7,7 +7,10 @@
 
 package org.usfirst.frc.team346.robot;
 
+import org.usfirst.frc.team346.Subsystems.Drive;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,12 +22,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends IterativeRobot {
+	private static final String kDefaultAuto = "Default";
+	private static final String kCustomAuto = "My Auto";
+	private String m_autoSelected;
+	private SendableChooser<String> m_chooser = new SendableChooser<>();
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
+	public Drive drive;
+	public XboxController xbx;
+	public boolean tankDrive = true; //Change this for tank/single stick
+	@Override
 	public void robotInit() {
-		
+		xbx = new XboxController(2);
+		drive = new Drive();
+		m_chooser.addDefault("Default Auto", kDefaultAuto);
+		m_chooser.addObject("My Auto", kCustomAuto);
+		SmartDashboard.putData("Auto choices", m_chooser);
 	}
 
 	/**
@@ -65,10 +81,14 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during operator control.
 	 */
+	@Override
 	public void teleopPeriodic() {
-		
+		if(tankDrive) {
+			drive.driveLeftSide(-xbx.getRawAxis(5));
+			drive.driveRightSide(xbx.getRawAxis(1));
+		}
 	}
-	
+		
 
 	/**
 	 * This function is called periodically during test mode.
